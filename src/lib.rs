@@ -1,14 +1,20 @@
 pub mod ffi;
 
 use cxx::let_cxx_string;
-use cxx::{CxxString, UniquePtr};
+use cxx::{UniquePtr};
 use http::{HeaderMap, Request, Response, StatusCode, Version};
 use std::convert::TryInto;
 use std::ffi::{CStr, CString, NulError};
-use std::net::{IpAddr, SocketAddr};
+use std::net::{SocketAddr};
 use std::ptr::null;
 use std::str::FromStr;
 use std::time::Duration;
+use lazy_static::lazy_static;
+use std::sync::{Arc, Mutex};
+
+lazy_static! {
+    static ref RULES_LOCK: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
+}
 
 macro_rules! invoke_native {
     ($ex:expr) => {
@@ -77,13 +83,14 @@ impl Rules {
         self.native.as_mut().unwrap().dump();
     }
 
-    /// Dump rules
-    pub fn get_parser_error(&mut self) -> String {
+    fn get_parser_error(&mut self) -> String {
         ffi::get_parser_error(self.native.as_mut().unwrap()).to_string()
     }
 
     /// Add rules from string
     pub fn add(&mut self, rules_str: &str, reference: &str) -> Result<(), Error> {
+        let _lock = RULES_LOCK.lock().unwrap();
+
         let native = self.native.as_mut().unwrap();
         let rules = CString::new(rules_str)?;
 
@@ -94,6 +101,7 @@ impl Rules {
             let msg = self.get_parser_error();
             return Err(Error::ModSecurity(msg));
         }
+
         Ok(())
     }
 }
@@ -299,7 +307,7 @@ impl Transaction {
                             .to_str()
                             .unwrap(),
                     )
-                    .unwrap(),
+                        .unwrap(),
                 )
             } else {
                 None
@@ -443,11 +451,4 @@ SecRule REQUEST_URI "/path1" "phase:1,block,id:5"
         assert!(intervented.redirect_to.is_none());
         assert!(intervented.disruptive);
     }
-
-    // #[test]
-    // pub fn test_dump() {
-    //     let rules_set = Rules::new();
-    //     // rules_set.add("asd").unwrap();
-    //     rules_set.dump();
-    // }
 }
