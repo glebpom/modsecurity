@@ -1,0 +1,3 @@
+[submodule "dep/ModSecurity"]
+	path = dep/ModSecurity
+	url = https://github.com/SpiderLabs/ModSecurity.git

@@ -1,0 +1,15 @@
+[package]
+name = "modsecurity"
+version = "0.1.0"
+authors = ["Gleb Pomykalov <gleb@exogress.com>"]
+edition = "2018"
+
+[dependencies]
+cxx = "1.0"
+thiserror = "1.0.25"
+http = "0.2.4"
+hyper = "0.14.9"
+
+[build-dependencies]
+pkg-config = "0.3.19"
+cxx-build = "1.0.49"
