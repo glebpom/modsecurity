@@ -39,6 +39,7 @@ fn main() {
         std::process::Command::new("./configure")
             .current_dir(&modsec_dir)
             .arg("--with-maxmind=no")
+            .arg("--without-geoip")
             .arg("--without-lua")
             .arg("--without-curl")
             .arg(format!("--prefix={}", dep_build_dir.display()))

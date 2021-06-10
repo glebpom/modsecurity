@@ -443,4 +443,11 @@ SecRule REQUEST_URI "/path1" "phase:1,block,id:5"
         assert!(intervented.redirect_to.is_none());
         assert!(intervented.disruptive);
     }
+
+    // #[test]
+    // pub fn test_dump() {
+    //     let rules_set = Rules::new();
+    //     // rules_set.add("asd").unwrap();
+    //     rules_set.dump();
+    // }
 }
