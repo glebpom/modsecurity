@@ -23,14 +23,6 @@ fn main() {
     lib_dir.push("lib");
 
     if !modsec_include_dir.exists() {
-        std::process::Command::new("git")
-            .arg("submodule")
-            .arg("update")
-            .arg("--init")
-            .arg("--recursive")
-            .output()
-            .unwrap();
-
         std::process::Command::new("./build.sh")
             .current_dir(&modsec_dir)
             .output()
