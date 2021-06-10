@@ -9,12 +9,8 @@ use std::net::{SocketAddr};
 use std::ptr::null;
 use std::str::FromStr;
 use std::time::Duration;
-use lazy_static::lazy_static;
-use std::sync::{Arc, Mutex};
 
-lazy_static! {
-    static ref RULES_LOCK: Arc<Mutex<()>> = Arc::new(Mutex::new(()));
-}
+static RULES_LOCK: parking_lot::Mutex<()> = parking_lot::const_mutex(());
 
 macro_rules! invoke_native {
     ($ex:expr) => {
@@ -89,7 +85,7 @@ impl Rules {
 
     /// Add rules from string
     pub fn add(&mut self, rules_str: &str, reference: &str) -> Result<(), Error> {
-        let _lock = RULES_LOCK.lock().unwrap();
+        let _lock = RULES_LOCK.lock();
 
         let native = self.native.as_mut().unwrap();
         let rules = CString::new(rules_str)?;
